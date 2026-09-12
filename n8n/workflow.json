@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## SBB Solution 08: Autonomous Multi-Agent Mainframe & Protocol State Machine\n**Domain**: Agentic Protocols & Distributed State\n\n### Discrete Micro-Functions:\n- **FEAT-008-01**: Finite State Machine Protocol Engine ()\n- **FEAT-008-02**: Cryptographic Event Journal & Replay ()\n- **FEAT-008-03**: P2P Inter-Agent Messaging Bus ()\n- **FEAT-008-04**: Autonomous Task Decomposition Router ()\n- **FEAT-008-05**: RPG Simulation Game Loop ()",
+        "content": "## SBB Solution 08: Autonomous Multi-Agent Mainframe & Protocol State Machine\n**Domain**: Agentic Protocols & Distributed State\n\n### Discrete Micro-Functions:\n- **FEAT-008-01**: Finite State Machine Protocol Engine (`POST /api/v1/fsm/transition`)\n- **FEAT-008-02**: Cryptographic Event Journal & Replay (`POST /api/v1/journal/append`)\n- **FEAT-008-03**: P2P Inter-Agent Messaging Bus (`POST /api/v1/p2p/send`)\n- **FEAT-008-04**: Autonomous Task Decomposition Router (`POST /api/v1/task/decompose`)\n- **FEAT-008-05**: RPG Simulation Game Loop (`POST /api/v1/rpg/tick`)",
         "height": 220,
         "width": 640,
         "color": 4
@@ -19,7 +19,7 @@
     },
     {
       "parameters": {
-        "content": "## Platform Variables Matrix ()\n- : \n- : \n- Error Workflow DLQ: ",
+        "content": "## Platform Variables Matrix\n- `SBB_MAINFRAME_URL`: `{{$vars.SBB_MAINFRAME_URL || 'http://127.0.0.1:8765'}}`\n- `SBB_VAULT_BRIDGE_URL`: `{{$vars.SBB_VAULT_BRIDGE_URL || 'http://127.0.0.1:8766'}}`\n- Error Workflow DLQ: `e7rR9pL2Km5Vx0Q3`",
         "height": 160,
         "width": 480,
         "color": 5

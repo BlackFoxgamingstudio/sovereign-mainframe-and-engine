@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  mainframe:
+    build: .
+    container_name: sovereign-mainframe-engine
+    ports:
+      - "8765:8765"
+    environment:
+      - MAINFRAME_HOST=0.0.0.0
+      - MAINFRAME_PORT=8765
+      - MAINFRAME_SECRET_KEY=sbb-mainframe-dev-secret-key-32b
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RPGWorldStateSpecification",
+  "version": "1.0.0",
+  "simulation": {
+    "tickRateMs": 1000,
+    "worldName": "SovereignCoreGrid",
+    "entities": [
+      {
+        "id": "entity-sre-01",
+        "name": "SentinelSRE",
+        "role": "Guardian",
+        "level": 12,
+        "hp": 100,
+        "maxHp": 100,
+        "status": "healthy"
+      },
+      {
+        "id": "entity-rpi-01",
+        "name": "EdgeCollector",
+        "role": "Scout",
+        "level": 8,
+        "hp": 85,
+        "maxHp": 100,
+        "status": "active"
+      }
+    ]
+  }
+}
