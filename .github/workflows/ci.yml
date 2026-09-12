@@ -22,3 +22,29 @@ jobs:
     - name: Run Test Suite
       run: |
         python3 -m unittest discover tests/
+
+  publish:
+    name: Publish to GHCR
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runtime
+          push: true
+          tags: |
+            ghcr.io/blackfoxgamingstudio/sovereign-mainframe-and-engine:latest
+            ghcr.io/blackfoxgamingstudio/sovereign-mainframe-and-engine:${{ github.sha }}
