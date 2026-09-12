@@ -1,0 +1,15 @@
+{
+  "id": "sol-sol-008-sovereign-mainframe-and-engine",
+  "slug": "sovereign-mainframe-and-engine",
+  "name": "Autonomous Multi-Agent Mainframe & Protocol State Machine",
+  "domain": "Agentic Protocols & Distributed State",
+  "version": "1.0.0",
+  "port": 8765,
+  "features": [
+    {"id": "FEAT-008-01", "name": "Finite State Machine Protocol Engine", "endpoint": "/api/v1/fsm/transition"},
+    {"id": "FEAT-008-02", "name": "Deterministic Event Replay & Journaling", "endpoint": "/api/v1/journal/replay"},
+    {"id": "FEAT-008-03", "name": "P2P Inter-Agent Messaging Bus", "endpoint": "/api/v1/p2p/dispatch"},
+    {"id": "FEAT-008-04", "name": "Autonomous Task Decomposition Router", "endpoint": "/api/v1/agent/route-task"},
+    {"id": "FEAT-008-05", "name": "RPG Game Loop & State Evaluator", "endpoint": "/api/v1/rpg/tick"}
+  ]
+}

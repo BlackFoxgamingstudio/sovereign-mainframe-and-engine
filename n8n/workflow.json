@@ -1,0 +1,174 @@
+{
+  "name": "SBB Solution 08: Autonomous Multi-Agent Mainframe & Protocol State Machine",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## SBB Solution 08: Autonomous Multi-Agent Mainframe & Protocol State Machine\n**Domain**: Agentic Protocols & Distributed State\n\n### Discrete Micro-Functions:\n- **FEAT-008-01**: Finite State Machine Protocol Engine ()\n- **FEAT-008-02**: Cryptographic Event Journal & Replay ()\n- **FEAT-008-03**: P2P Inter-Agent Messaging Bus ()\n- **FEAT-008-04**: Autonomous Task Decomposition Router ()\n- **FEAT-008-05**: RPG Simulation Game Loop ()",
+        "height": 220,
+        "width": 640,
+        "color": 4
+      },
+      "id": "sticky-mainframe-overview",
+      "name": "Mainframe Overview Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Platform Variables Matrix ()\n- : \n- : \n- Error Workflow DLQ: ",
+        "height": 160,
+        "width": 480,
+        "color": 5
+      },
+      "id": "sticky-mainframe-vars",
+      "name": "Variables Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mainframe",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "mf-webhook-trigger",
+      "name": "Mainframe Webhook Gateway",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        300
+      ],
+      "webhookId": "sbb-mainframe-gateway"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ( && .SBB_MAINFRAME_URL ? .SBB_MAINFRAME_URL : \"http://127.0.0.1:8765\") + \"/api/v1/fsm/transition\" }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\"target_state\": .body.target_state || \"TASK_DECOMPOSING\", \"trigger_event\": .body.event || \"WEBHOOK_TRIGGER\", \"context\": .body}) }}",
+        "options": {}
+      },
+      "id": "mf-node-fsm-transition",
+      "name": "Transition FSM State",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ( && .SBB_MAINFRAME_URL ? .SBB_MAINFRAME_URL : \"http://127.0.0.1:8765\") + \"/api/v1/journal/append\" }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\"event_type\": \"FSM_TRANSITION_COMMITTED\", \"source\": \"sbb-mainframe\", \"data\": }) }}",
+        "options": {}
+      },
+      "id": "mf-node-journal-append",
+      "name": "Append to Event Journal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ( && .SBB_VAULT_BRIDGE_URL ? .SBB_VAULT_BRIDGE_URL : \"http://127.0.0.1:8766\") + \"/api/webhook/audit\" }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\"event_name\": \"mainframe_state_transition\", \"source\": \"sbb-solution-08\", \"details\": }) }}",
+        "options": {}
+      },
+      "id": "mf-node-vault-audit",
+      "name": "Persist to Vault Ledger",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ \"success\": true, \"mainframe_response\":  }) }}",
+        "options": {}
+      },
+      "id": "mf-respond-node",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Mainframe Webhook Gateway": {
+      "main": [
+        [
+          {
+            "node": "Transition FSM State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transition FSM State": {
+      "main": [
+        [
+          {
+            "node": "Append to Event Journal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Event Journal": {
+      "main": [
+        [
+          {
+            "node": "Persist to Vault Ledger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist to Vault Ledger": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "e7rR9pL2Km5Vx0Q3"
+  }
+}

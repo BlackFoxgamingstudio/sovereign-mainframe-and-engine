@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sovereign-mainframe-and-engine"
+version = "1.0.0"
+description = "Autonomous Multi-Agent Mainframe & Protocol State Machine"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Russell Alan Powers", email = "russell@sovereignbizbox.io"}]
+
+[project.scripts]
+sbb-mainframe = "src.cli:main"
