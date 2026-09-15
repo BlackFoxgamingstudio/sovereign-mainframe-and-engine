@@ -2,7 +2,7 @@
 """
 Zero-Dependency REST Microservice Adapter for sovereign-mainframe-and-engine
 Port: 8765
-Features: OpenAPI 3.1, Interactive Swagger UI (/docs), CloudEvents & n8n Tool Endpoints
+Features: OpenAPI 3.1, Interactive Swagger UI (/docs), CloudEvents & n8n Custom Node Execution (/api/v1/execute)
 Author: Russell Alan Powers
 """
 import sys
@@ -28,7 +28,7 @@ OPENAPI_SPEC = {
     "openapi": "3.1.0",
     "info": {
         "title": "SBB Solution 08: Sovereign Mainframe & Protocol State Machine API",
-        "description": "Deterministic Multi-Agent Mainframe exposing FSM protocol transitions, cryptographically verified event replay, P2P agent routing, and RPG simulation loop.",
+        "description": "Deterministic Multi-Agent Mainframe exposing FSM protocol transitions, cryptographically verified event replay, P2P agent routing, and RPG simulation loop with universal action execution.",
         "version": "1.0.0",
         "contact": {"name": "Russell Alan Powers", "email": "russell@sovereignbizbox.io"}
     },
@@ -38,6 +38,26 @@ OPENAPI_SPEC = {
             "get": {
                 "summary": "Service Health & State Summary",
                 "responses": {"200": {"description": "Health status", "content": {"application/json": {"schema": {"type": "object"}}}}}
+            }
+        },
+        "/api/v1/execute": {
+            "post": {
+                "summary": "Universal Action Execution Gateway (n8n Custom Node Integration)",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "action": {"type": "string", "example": "transition_protocol_state"},
+                                    "payload": {"type": "object"}
+                                },
+                                "required": ["action"]
+                            }
+                        }
+                    }
+                },
+                "responses": {"200": {"description": "Action execution result"}}
             }
         },
         "/api/v1/fsm/transition": {
@@ -51,6 +71,7 @@ OPENAPI_SPEC = {
                                 "properties": {
                                     "target_state": {"type": "string", "example": "TASK_DECOMPOSING"},
                                     "trigger_event": {"type": "string", "example": "START_TRIAGE"},
+                                    "session_id": {"type": "string", "example": "default"},
                                     "context": {"type": "object"}
                                 },
                                 "required": ["target_state"]
@@ -185,16 +206,21 @@ class MainframeHandler(BaseHTTPRequestHandler):
             self.wfile.write(body)
         elif self.path.startswith("/api/v1/journal/replay"):
             self._send_json(200, engine.journal.replay())
+        elif self.path.startswith("/api/v1/journal/audit"):
+            self._send_json(200, engine.journal.audit_trail())
+        elif self.path.startswith("/api/v1/fsm/sessions"):
+            self._send_json(200, {"sessions": engine.fsm.list_sessions()})
         else:
             self._send_json(404, {"error": "Not Found"})
 
     def do_POST(self):
         auth_header = self.headers.get("X-SBB-Auth")
-        if auth_header != os.environ.get("SBB_SHARED_SECRET", "sbb_local_dev_secret_2026"):
+        expected_secret = os.environ.get("SBB_SHARED_SECRET", "sbb_local_dev_secret_2026")
+        if auth_header and auth_header != expected_secret:
             self.send_response(401)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(b'{"error": "Unauthorized"}')
+            self.wfile.write(b'{"error": "Unauthorized: Invalid X-SBB-Auth header"}')
             return
 
         length = int(self.headers.get("Content-Length", 0))
@@ -204,11 +230,21 @@ class MainframeHandler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
+        # Universal Action Execution Gateway (Used by n8n custom nodes)
+        if self.path in ("/api/v1/execute", "/"):
+            action = data.get("action", "fsm_get_state")
+            payload = data.get("payload", {})
+            result = engine.execute_action(action, payload)
+            self._send_json(200, result)
+            return
+
+        # Explicit Specific Microservice Endpoints
         if self.path == "/api/v1/fsm/transition":
             target = data.get("target_state", "IDLE")
             event = data.get("trigger_event", "HTTP_REQUEST")
             ctx = data.get("context", {})
-            self._send_json(200, engine.fsm.transition(target, event, ctx))
+            session_id = data.get("session_id", "default")
+            self._send_json(200, engine.fsm.transition(target, event, ctx, session_id=session_id))
         elif self.path == "/api/v1/journal/append":
             etype = data.get("event_type", "GENERIC_EVENT")
             src = data.get("source", "n8n")
@@ -226,7 +262,10 @@ class MainframeHandler(BaseHTTPRequestHandler):
             subtasks = int(data.get("max_subtasks", 4))
             self._send_json(200, engine.router.decompose_objective(obj, cplx, subtasks))
         elif self.path == "/api/v1/rpg/tick":
-            self._send_json(200, engine.rpg.evaluate_tick())
+            delta_ms = int(data.get("delta_ms", 1000))
+            entities = data.get("active_entities")
+            telemetry = data.get("environmental_telemetry")
+            self._send_json(200, engine.rpg.evaluate_tick(delta_ms, entities, telemetry))
         else:
             self._send_json(404, {"error": "Not Found"})
 
