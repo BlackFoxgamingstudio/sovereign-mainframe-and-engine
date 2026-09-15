@@ -1,15 +1,20 @@
-# Changelog
+# Changelog — Sovereign Mainframe And Engine
 
-All notable changes to this project will be documented in this file.
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
+Versioning follows [Semantic Versioning](https://semver.org/).
 
-## [1.0.0] - 2026-09-12
+## [Unreleased] — v1.1.0 (Domain Business Logic Engine)
+### In Progress
+- Continuous hardening and telemetry streaming.
+- Zero pending gaps.
+
+## [1.0.0] — 2026-09-11 (Production DevOps & Automation Foundation)
 ### Added
-- **FEAT-008-01**: Finite State Machine protocol engine with strict state transition matrices and deterministic hashing.
-- **FEAT-008-02**: Cryptographic SHA-256 Merkle-adjacent immutable event journal with tamper detection and replay.
-- **FEAT-008-03**: Peer-to-peer inter-agent messaging bus with TTL mailboxes and acknowledgment tokens.
-- **FEAT-008-04**: Hierarchical task decomposition router with sub-agent persona dispatching.
-- **FEAT-008-05**: RPG simulation engine and discrete tick evaluator for digital twin state machines.
-- **n8n Integration**: Webhook adapter with OpenAPI 3.1 and Swagger UI on port 8765, linked to DLQ `e7rR9pL2Km5Vx0Q3`.
-- **CLI**: Multi-command interface (`fsm`, `journal`, `verify-journal`, `p2p`, `task`, `rpg-tick`).
+- Multi-stage Dockerfile with non-root security context and health check.
+- GitHub Actions CI matrix testing across Python 3.10, 3.11, and 3.12.
+- Zero-Trust REST Webhook Adapter listening on port `8000` with `X-SBB-Auth` header validation.
+- OpenAPI 3.1 interactive Swagger documentation (`/docs` and `/openapi.json`).
+- Full n8n workflow canvas integration connecting Webhook ➔ HTTP Microservice ➔ Respond to Webhook.
+- Architecture specification (`docs/ARCHITECTURE.md`), Developer Guide, SME Playbook, and SOP.
+- Standardized CLI invocation harness in `src/cli.py`.
+- Production implementation of core components: EventJournalMerkle, ProtocolFSM, P2PMessageBus, TaskRouterDAG, RPGSimulationLoop.
