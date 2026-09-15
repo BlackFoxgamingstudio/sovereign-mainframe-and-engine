@@ -8,3 +8,5 @@ data/*.db-shm
 .pytest_cache/
 .hypothesis/
 .env
+__pycache__/
+*.pyc
